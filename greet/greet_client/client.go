@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"log"
 
@@ -19,4 +20,17 @@ func main() {
 
 	c := greetpb.NewGreetServiceClient(cc)
 	fmt.Printf("create client: %v", c)
+
+	req := &greetpb.GreetRequest{
+		Greeting: &greetpb.Greeting{
+			FirstName: "jane", LastName: "doe",
+		},
+	}
+
+	rep, err := c.Greet(context.Background(), req)
+	if err != nil {
+		log.Fatalf("could get resposne: %v", err)
+	}
+
+	fmt.Println("%v", rep)
 }

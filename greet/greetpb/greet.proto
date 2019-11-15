@@ -3,4 +3,23 @@ syntax = "proto3";
 package greet;
 option go_package="greetpb";
 
-service GreetService{}
+// The greeting service definition.
+service GreetService {
+    // Sends a greeting
+    rpc Greet(GreetRequest) returns (GreetReponse) {}
+}
+  
+// The request message containing the user's name.
+message Greeting {
+    string firstname = 1;
+    string lastname = 2;
+}
+
+message GreetRequest{
+    Greeting greeting = 1;
+}
+  
+// The response message containing the greetings
+message GreetReponse {
+    string result = 1;
+}
