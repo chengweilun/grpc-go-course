@@ -7,12 +7,13 @@ option go_package="greetpb";
 service GreetService {
     // Sends a greeting
     rpc Greet(GreetRequest) returns (GreetReponse) {}
+    rpc GreetManyTimes(GreetManyTimesRequest) returns (stream GreetManyTimesReponse) {}
 }
   
 // The request message containing the user's name.
 message Greeting {
-    string firstname = 1;
-    string lastname = 2;
+    string first_name = 1;
+    string last_name = 2;
 }
 
 message GreetRequest{
@@ -21,5 +22,14 @@ message GreetRequest{
   
 // The response message containing the greetings
 message GreetReponse {
+    string result = 1;
+}
+
+message GreetManyTimesRequest{
+    Greeting greeting = 1;
+}
+  
+// The response message containing the greetings
+message GreetManyTimesReponse {
     string result = 1;
 }
