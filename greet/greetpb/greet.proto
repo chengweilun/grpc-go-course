@@ -9,6 +9,7 @@ service GreetService {
     rpc Greet(GreetRequest) returns (GreetReponse) {}
     rpc GreetManyTimes(GreetManyTimesRequest) returns (stream GreetManyTimesReponse) {}
     rpc LongGreet(stream LongGreetRequest) returns(LongGreetReponse) {}
+    rpc GreetEveryOne(stream GreetEveryOneRequest) returns(stream GreetEveryOneResponse) {}
 }
   
 // The request message containing the user's name.
@@ -41,5 +42,14 @@ message LongGreetRequest{
   
 // The response message containing the greetings
 message LongGreetReponse {
+    string result = 1;
+}
+
+message GreetEveryOneRequest{
+    Greeting greeting = 1;
+}
+  
+// The response message containing the greetings
+message GreetEveryOneResponse {
     string result = 1;
 }

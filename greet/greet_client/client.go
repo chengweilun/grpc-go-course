@@ -111,6 +111,80 @@ func clientStreaming(c greetpb.GreetServiceClient) {
 	fmt.Printf("%v\n", res.GetResult())
 }
 
+func biStreaming(c greetpb.GreetServiceClient) {
+	requests := []*greetpb.GreetEveryOneRequest{
+		&greetpb.GreetEveryOneRequest{
+			Greeting: &greetpb.Greeting{
+				FirstName: "jane",
+				LastName:  "don",
+			},
+		},
+		&greetpb.GreetEveryOneRequest{
+			Greeting: &greetpb.Greeting{
+				FirstName: "jane2",
+				LastName:  "don",
+			},
+		},
+		&greetpb.GreetEveryOneRequest{
+			Greeting: &greetpb.Greeting{
+				FirstName: "jane3",
+				LastName:  "don",
+			},
+		},
+		&greetpb.GreetEveryOneRequest{
+			Greeting: &greetpb.Greeting{
+				FirstName: "jane4",
+				LastName:  "don",
+			},
+		},
+		&greetpb.GreetEveryOneRequest{
+			Greeting: &greetpb.Greeting{
+				FirstName: "jane5",
+				LastName:  "don",
+			},
+		},
+		&greetpb.GreetEveryOneRequest{
+			Greeting: &greetpb.Greeting{
+				FirstName: "jane6",
+				LastName:  "don",
+			},
+		},
+	}
+	waitc := make(chan struct{})
+	stream, err := c.GreetEveryOne(context.Background())
+
+	if err != nil {
+		log.Fatalf("can not call rpc method GreetEveryOne")
+	}
+
+	go func() {
+		for _, req := range requests {
+			stream.Send(req)
+			fmt.Printf("sending request %v\n", req)
+			time.Sleep(500 * time.Millisecond)
+		}
+		stream.CloseSend()
+	}()
+
+	go func() {
+		for {
+			res, err := stream.Recv()
+			if err == io.EOF {
+				close(waitc)
+				break
+			}
+			if err != nil {
+				log.Fatalf("error: %v", err)
+				close(waitc)
+				break
+			}
+			fmt.Printf("receive message: %v\n", res.GetResult())
+		}
+	}()
+
+	<-waitc
+}
+
 func main() {
 	fmt.Println("client")
 	cc, err := grpc.Dial("0.0.0.0:50051", grpc.WithInsecure())
@@ -122,7 +196,5 @@ func main() {
 
 	c := greetpb.NewGreetServiceClient(cc)
 	fmt.Printf("create client: %v\n", c)
-	unaryRequest(c)
-	serverStreaming(c)
-	clientStreaming(c)
+	biStreaming(c)
 }

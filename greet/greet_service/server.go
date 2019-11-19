@@ -50,6 +50,28 @@ func (*server) LongGreet(stream greetpb.GreetService_LongGreetServer) error {
 	}
 }
 
+func (*server) GreetEveryOne(stream greetpb.GreetService_GreetEveryOneServer) error {
+	fmt.Println("receive rpc call GreetEveryOne")
+	for {
+		req, err := stream.Recv()
+		if err == io.EOF {
+			return nil
+		}
+		if err != nil {
+			log.Fatalf("can not decode request:  %v\n", err)
+			return err
+		}
+		firstName := req.GetGreeting().GetFirstName()
+		sendErr := stream.Send(&greetpb.GreetEveryOneResponse{
+			Result: "hello " + firstName,
+		})
+		if sendErr != nil {
+			log.Fatalf("error sending reply  %v\n", err)
+			return err
+		}
+	}
+}
+
 func main() {
 	fmt.Println("Hello Wolrd!")
 
